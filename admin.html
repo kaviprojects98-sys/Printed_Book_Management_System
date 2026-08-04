@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/admin.css">
+
+    <style>
+        /* --- OVERRIDE NARROW CARD LAYOUT FOR FULL-SCREEN LANDSCAPE --- */
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Allow dashboard container to expand wide */
+        .dashboard {
+            max-width: 1400px !important;
+            width: 95% !important;
+            margin: 0 auto !important;
+            padding: 30px 20px !important;
+            box-sizing: border-box;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .empty-msg,
+        .loading-msg {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Full Width Table View */
+        #wijethungaOrdersView {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        /* Scrollable container for tables */
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            background: #fff;
+        }
+
+        /* Full Width Table Styling */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #d0d7de;
+            padding: 10px 14px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .summary-table thead tr:nth-child(1) th {
+            background-color: #2d89ef;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .summary-table thead tr:nth-child(2) th {
+            background-color: #eef3fb;
+            color: #333;
+            font-size: 13px;
+        }
+
+        /* Make Subject column clear and readable */
+        .summary-table td:first-child {
+            text-align: left;
+            font-weight: bold;
+            background-color: #f8f9fa;
+            white-space: nowrap;
+            min-width: 180px;
+        }
+
+        /* Action Buttons Area */
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 10px 24px;
+            font-size: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #555;
+            color: white;
+            transition: background 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #333;
+        }
+
+        /* Print Button Specific Styling */
+        .print-btn {
+            background-color: #27ae60;
+        }
+
+        .print-btn:hover {
+            background-color: #1e8449;
+        }
+
+        /* PRINT & PDF STYLES */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+
+            body {
+                background: #fff !important;
+                padding: 0 !important;
+            }
+
+            h1, h2, .admin-name, #mainMenu, #publisherMenu, #wijethungaMenu, .button-group {
+                display: none !important;
+            }
+
+            .dashboard {
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            #wijethungaOrdersView {
+                display: block !important;
+                margin: 0 !important;
+            }
+
+            #tableTitle {
+                font-size: 18px !important;
+                font-weight: bold !important;
+                margin-bottom: 15px !important;
+                text-align: center !important;
+                color: #000 !important;
+                display: block !important;
+            }
+
+            .table-responsive-wrapper {
+                box-shadow: none !important;
+                overflow: visible !important;
+            }
+
+            .summary-table {
+                width: 100% !important;
+                font-size: 12px !important;
+            }
+
+            .summary-table th, .summary-table td {
+                padding: 6px 8px !important;
+                border: 1px solid #000 !important;
+            }
+
+            .summary-table thead tr:nth-child(1) th {
+                background-color: #2d89ef !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>Samanala Bookshop</h1>
+    <h2>Book Store Management System</h2>
+
+    <div class="admin-name">
+        Admin Panel
+    </div>
+
+    <!-- Main Menu -->
+    <div id="mainMenu">
+        <button onclick="showOrders()">
+            Pending Orders
+        </button>
+
+        <button onclick="previousOrders()">
+            Previous Orders
+        </button>
+
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+    </div>
+
+    <!-- Publisher Menu -->
+    <div id="publisherMenu" class="hidden">
+        <button onclick="wijethungaOrders()">
+            Wijethunga
+        </button>
+
+        <button onclick="masterguideOrders()">
+            Masterguide
+        </button>
+
+        <button class="back" onclick="goBackToMainMenu()">
+            ← Back
+        </button>
+    </div>
+
+    <!-- Wijethunga Sub-Menu -->
+    <div id="wijethungaMenu" class="hidden">
+        <button onclick="wijethungaGrade6To11()">
+            Grade 6-11 orders
+        </button>
+
+        <button onclick="wijethungaOL()">
+            OL orders
+        </button>
+
+        <button class="back" onclick="goBackToPublisherMenu()">
+            ← Back
+        </button>
+    </div>
+
+    <!-- Wijethunga Orders Table View (Shared for Grade 6-11 & O/L) -->
+    <div id="wijethungaOrdersView" class="hidden">
+        <h2 id="tableTitle">Total Order Qty (Grade 6 - 11)</h2>
+        <div id="tableContainer">
+            <div class="loading-msg">Loading table data...</div>
+        </div>
+
+        <div class="button-group">
+            <button class="action-btn" onclick="goBackToWijethungaMenu()">
+                ← Back
+            </button>
+            <button class="action-btn print-btn" onclick="printPDF()">
+                🖨️ Print / Save PDF
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwLaYh9m5Lc2MwFThleWbhwwMVUtL9R2DGr06U7bNPJumV2pBFLAI0aW-Hc__LsqZ5X/exec"; 
+
+    // Navigation Functions
+    function showOrders() {
+        document.getElementById("mainMenu").classList.add("hidden");
+        document.getElementById("publisherMenu").classList.remove("hidden");
+    }
+
+    function goBackToMainMenu() {
+        document.getElementById("publisherMenu").classList.add("hidden");
+        document.getElementById("mainMenu").classList.remove("hidden");
+    }
+
+    function wijethungaOrders() {
+        document.getElementById("publisherMenu").classList.add("hidden");
+        document.getElementById("wijethungaMenu").classList.remove("hidden");
+    }
+
+    function goBackToPublisherMenu() {
+        document.getElementById("wijethungaMenu").classList.add("hidden");
+        document.getElementById("publisherMenu").classList.remove("hidden");
+    }
+
+    function goBackToWijethungaMenu() {
+        document.getElementById("wijethungaOrdersView").classList.add("hidden");
+        document.getElementById("wijethungaMenu").classList.remove("hidden");
+    }
+
+    function printPDF() {
+        window.print();
+    }
+
+    // 1. Fetch Grade 6-11 Data
+    function wijethungaGrade6To11() {
+        document.getElementById("wijethungaMenu").classList.add("hidden");
+        document.getElementById("wijethungaOrdersView").classList.remove("hidden");
+        document.getElementById("tableTitle").textContent = "Total Order Qty (Grade 6 - 11)";
+
+        var container = document.getElementById("tableContainer");
+        container.innerHTML = "<div class='loading-msg'>Loading table data...</div>";
+
+        fetch(WEB_APP_URL + "?action=getOrders")
+            .then(response => response.json())
+            .then(data => {
+                renderSummaryTable(data);
+            })
+            .catch(err => {
+                console.error(err);
+                container.innerHTML = "<div class='empty-msg'>Error loading data: " + err.message + "</div>";
+            });
+    }
+
+    // 2. Fetch O/L Orders Data
+    function wijethungaOL() {
+        document.getElementById("wijethungaMenu").classList.add("hidden");
+        document.getElementById("wijethungaOrdersView").classList.remove("hidden");
+        document.getElementById("tableTitle").textContent = "Total Order Qty (O/L Subjects)";
+
+        var container = document.getElementById("tableContainer");
+        container.innerHTML = "<div class='loading-msg'>Loading table data...</div>";
+
+        fetch(WEB_APP_URL + "?action=getOLOrders")
+            .then(response => response.json())
+            .then(data => {
+                renderSummaryTable(data);
+            })
+            .catch(err => {
+                console.error(err);
+                container.innerHTML = "<div class='empty-msg'>Error loading data: " + err.message + "</div>";
+            });
+    }
+
+    // Universal Dynamic Table Renderer
+    function renderSummaryTable(data) {
+        var container = document.getElementById("tableContainer");
+
+        if (!data || data.length === 0) {
+            container.innerHTML = "<div class='empty-msg'>No data found.</div>";
+            return;
+        }
+
+        var html = "<div class='table-responsive-wrapper'>";
+        html += "<table class='summary-table'>";
+
+        html += "<thead>";
+        
+        // Header Row 1
+        html += "<tr>";
+        var colsInRow0 = data[0].length;
+        for (var c = 0; c < colsInRow0; c++) {
+            var val = data[0][c] !== "" ? data[0][c] : "";
+            // Handle merged title cells across all columns on row 1 if applicable
+            if (c === 0 && colsInRow0 > 1 && data[0].slice(1).every(item => item === "")) {
+                html += "<th colspan='" + colsInRow0 + "'>" + val + "</th>";
+                break;
+            } else {
+                html += "<th>" + val + "</th>";
+            }
+        }
+        html += "</tr>";
+
+        // Header Row 2 (Column Labels / Subtitles)
+        if (data.length > 1 && data[1].some(cell => cell !== "")) {
+            html += "<tr>";
+            for (var c = 0; c < data[1].length; c++) {
+                html += "<th>" + data[1][c] + "</th>";
+            }
+            html += "</tr>";
+        }
+        
+        html += "</thead>";
+
+        // Render Data Rows (Starting from Index 2)
+        html += "<tbody>";
+        for (var r = 2; r < data.length; r++) {
+            var isRowEmpty = data[r].every(cell => cell === "" || cell === null);
+            if (!isRowEmpty) {
+                html += "<tr>";
+                for (var c = 0; c < data[r].length; c++) {
+                    html += "<td>" + data[r][c] + "</td>";
+                }
+                html += "</tr>";
+            }
+        }
+        html += "</tbody>";
+
+        html += "</table>";
+        html += "</div>";
+
+        container.innerHTML = html;
+    }
+
+    function masterguideOrders() {
+        alert("Masterguide Pending Orders");
+    }
+
+    function previousOrders() {
+        alert("Previous Orders");
+    }
+
+    function logout() {
+        sessionStorage.removeItem("user");
+        window.location.href = "index.html";
+    }
+</script>
+
+</body>
+</html>
