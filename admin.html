@@ -8,182 +8,87 @@
     <link rel="stylesheet" href="css/admin.css">
 
     <style>
-        /* --- OVERRIDE NARROW CARD LAYOUT FOR FULL-SCREEN LANDSCAPE --- */
-        body {
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+        body { background-color: #f4f6f9; margin: 0; padding: 20px; box-sizing: border-box; }
+        .dashboard { max-width: 1400px !important; width: 95% !important; margin: 0 auto !important; padding: 30px 20px !important; box-sizing: border-box; }
+        .hidden { display: none !important; }
+        .empty-msg, .loading-msg { text-align: center; padding: 20px; color: #666; font-size: 16px; }
+        #ordersView { width: 100% !important; max-width: 100% !important; margin: 20px auto; text-align: center; }
+        .table-responsive-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); background: #fff; }
+        .summary-table { width: 100%; border-collapse: collapse; background: #ffffff; }
+        .summary-table th, .summary-table td { border: 1px solid #d0d7de; padding: 10px 14px; text-align: center; font-size: 14px; }
+        .summary-table thead tr:nth-child(1) th { background-color: #2d89ef; color: white; font-weight: bold; font-size: 15px; }
+        .summary-table thead tr:nth-child(2) th { background-color: #eef3fb; color: #333; font-size: 13px; }
+        .summary-table td:first-child { text-align: left; font-weight: bold; background-color: #f8f9fa; white-space: nowrap; min-width: 180px; }
+        .button-group { margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .action-btn { padding: 10px 24px; font-size: 15px; border: none; border-radius: 5px; cursor: pointer; background-color: #555; color: white; transition: background 0.2s ease; }
+        .action-btn:hover { background-color: #333; }
+        .print-btn { background-color: #27ae60; }
+        .print-btn:hover { background-color: #1e8449; }
+        .danger-btn { background-color: #e74c3c; }
+        .danger-btn:hover { background-color: #c0392b; }
 
-        /* Allow dashboard container to expand wide */
-        .dashboard {
-            max-width: 1400px !important;
-            width: 95% !important;
-            margin: 0 auto !important;
-            padding: 30px 20px !important;
-            box-sizing: border-box;
-        }
+        /* Timestamps Container Styling */
+        .timestamps-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px 20px; margin: 20px 0; text-align: left; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .timestamps-card h3 { margin-top: 0; color: #2c3e50; font-size: 16px; border-bottom: 2px solid #2d89ef; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .shop-time-list { list-style: none; padding: 0; margin: 10px 0 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+        .shop-time-item { background: #f8f9fa; border: 1px solid #e9ecef; padding: 8px 12px; border-radius: 5px; font-size: 13px; color: #333; }
+        .shop-time-item strong { color: #2d89ef; }
+        .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; }
+        .clear-btn:hover { background-color: #c0392b; }
 
-        .hidden {
-            display: none !important;
-        }
+        /* Print Header - Hidden on screen by default */
+        .print-header { display: none; width: 100%; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .print-header-content { display: flex; align-items: center; justify-content: space-between; text-align: left; width: 100%; }
+        .print-logo-title { display: flex; align-items: center; gap: 15px; }
+        .print-logo { height: 50px; width: auto; object-fit: contain; }
+        .print-shop-name { margin: 0; font-size: 22px; font-weight: bold; color: #000; }
+        .print-date { font-size: 13px; color: #000; font-weight: bold; text-align: right; }
 
-        .empty-msg,
-        .loading-msg {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 16px;
-        }
-
-        /* Full Width Table View */
-        #wijethungaOrdersView {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 20px auto;
-            text-align: center;
-        }
-
-        /* Scrollable container for tables */
-        .table-responsive-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            background: #fff;
-        }
-
-        /* Full Width Table Styling */
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #ffffff;
-        }
-
-        .summary-table th,
-        .summary-table td {
-            border: 1px solid #d0d7de;
-            padding: 10px 14px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .summary-table thead tr:nth-child(1) th {
-            background-color: #2d89ef;
-            color: white;
-            font-weight: bold;
-            font-size: 15px;
-        }
-
-        .summary-table thead tr:nth-child(2) th {
-            background-color: #eef3fb;
-            color: #333;
-            font-size: 13px;
-        }
-
-        /* Make Subject column clear and readable */
-        .summary-table td:first-child {
-            text-align: left;
-            font-weight: bold;
-            background-color: #f8f9fa;
-            white-space: nowrap;
-            min-width: 180px;
-        }
-
-        /* Action Buttons Area */
-        .button-group {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .action-btn {
-            padding: 10px 24px;
-            font-size: 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #555;
-            color: white;
-            transition: background 0.2s ease;
-        }
-
-        .action-btn:hover {
-            background-color: #333;
-        }
-
-        /* Print Button Specific Styling */
-        .print-btn {
-            background-color: #27ae60;
-        }
-
-        .print-btn:hover {
-            background-color: #1e8449;
-        }
-
-        /* PRINT & PDF STYLES */
         @media print {
-            @page {
-                size: landscape;
-                margin: 10mm;
+            @page { size: landscape; margin: 10mm; }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
-            body {
-                background: #fff !important;
-                padding: 0 !important;
-            }
-
-            h1, h2, .admin-name, #mainMenu, #publisherMenu, #wijethungaMenu, .button-group {
-                display: none !important;
-            }
-
-            .dashboard {
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
+            body { background: #fff !important; padding: 0 !important; }
+            h1, h2:not(.print-shop-name), .admin-name, #mainMenu, #publisherMenu, #wijethungaMenu, #masterguideMenu, .button-group, .timestamps-card { display: none !important; }
+            .dashboard { box-shadow: none !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
+            #ordersView { display: block !important; margin: 0 !important; width: 100% !important; }
+            
+            /* Explicit Print Header Visibility */
+            .print-header { 
+                display: block !important; 
+                visibility: visible !important;
                 width: 100% !important;
-                max-width: 100% !important;
             }
-
-            #wijethungaOrdersView {
-                display: block !important;
-                margin: 0 !important;
+            .print-header-content {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
             }
-
-            #tableTitle {
-                font-size: 18px !important;
-                font-weight: bold !important;
-                margin-bottom: 15px !important;
-                text-align: center !important;
+            .print-logo-title {
+                display: flex !important;
+                align-items: center !important;
+            }
+            .print-shop-name {
+                display: inline-block !important;
+                visibility: visible !important;
                 color: #000 !important;
-                display: block !important;
+                font-size: 22px !important;
+                font-weight: bold !important;
             }
-
-            .table-responsive-wrapper {
-                box-shadow: none !important;
-                overflow: visible !important;
+            .print-logo {
+                display: inline-block !important;
+                visibility: visible !important;
             }
-
-            .summary-table {
-                width: 100% !important;
-                font-size: 12px !important;
-            }
-
-            .summary-table th, .summary-table td {
-                padding: 6px 8px !important;
-                border: 1px solid #000 !important;
-            }
-
-            .summary-table thead tr:nth-child(1) th {
-                background-color: #2d89ef !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            
+            #tableTitle { font-size: 18px !important; font-weight: bold !important; margin-bottom: 15px !important; text-align: center !important; color: #000 !important; display: block !important; }
+            .table-responsive-wrapper { box-shadow: none !important; overflow: visible !important; }
+            .summary-table { width: 100% !important; font-size: 12px !important; }
+            .summary-table th, .summary-table td { padding: 6px 8px !important; border: 1px solid #000 !important; }
+            .summary-table thead tr:nth-child(1) th { background-color: #2d89ef !important; color: white !important; }
         }
     </style>
 </head>
@@ -195,69 +100,74 @@
     <h1>Samanala Bookshop</h1>
     <h2>Book Store Management System</h2>
 
-    <div class="admin-name">
-        Admin Panel
-    </div>
+    <div class="admin-name">Admin Panel</div>
 
     <!-- Main Menu -->
     <div id="mainMenu">
-        <button onclick="showOrders()">
-            Pending Orders
-        </button>
-
-        <button onclick="previousOrders()">
-            Previous Orders
-        </button>
-
-        <button class="logout" onclick="logout()">
-            Logout
-        </button>
+        <button onclick="showOrders()">Pending Orders</button>
+        <button onclick="previousOrders()">Previous Orders</button>
+        <button class="logout" onclick="logout()">Logout</button>
     </div>
 
     <!-- Publisher Menu -->
     <div id="publisherMenu" class="hidden">
-        <button onclick="wijethungaOrders()">
-            Wijethunga
-        </button>
-
-        <button onclick="masterguideOrders()">
-            Masterguide
-        </button>
-
-        <button class="back" onclick="goBackToMainMenu()">
-            ← Back
-        </button>
+        <button onclick="wijethungaOrders()">Wijethunga</button>
+        <button onclick="masterguideOrders()">Masterguide</button>
+        <button class="back" onclick="goBackToMainMenu()">← Back</button>
     </div>
 
     <!-- Wijethunga Sub-Menu -->
     <div id="wijethungaMenu" class="hidden">
-        <button onclick="wijethungaGrade6To11()">
-            Grade 6-11 orders
-        </button>
-
-        <button onclick="wijethungaOL()">
-            OL orders
-        </button>
-
-        <button class="back" onclick="goBackToPublisherMenu()">
-            ← Back
-        </button>
+        <button onclick="fetchOrderData('wijethunga', 'getOrders', 'Wijethunga Total Order Qty (Grade 6 - 11)', '6_11')">Grade 6-11 orders</button>
+        <button onclick="fetchOrderData('wijethunga', 'getOLOrders', 'Wijethunga Total Order Qty (O/L Subjects)', 'ol')">OL orders</button>
+        <button class="back" onclick="goBackToPublisherMenu('wijethungaMenu')">← Back</button>
     </div>
 
-    <!-- Wijethunga Orders Table View (Shared for Grade 6-11 & O/L) -->
-    <div id="wijethungaOrdersView" class="hidden">
-        <h2 id="tableTitle">Total Order Qty (Grade 6 - 11)</h2>
+    <!-- Masterguide Sub-Menu -->
+    <div id="masterguideMenu" class="hidden">
+        <button onclick="fetchOrderData('masterguide', 'getPrimaryOrders', 'Masterguide Total Order Qty (Primary)', 'primary')">Primary orders</button>
+        <button onclick="fetchOrderData('masterguide', 'getSecondaryOrders', 'Masterguide Total Order Qty (Secondary)', 'secondary')">Secondary orders</button>
+        <button onclick="fetchOrderData('masterguide', 'getOLOrders', 'Masterguide Total Order Qty (OL)', 'ol')">OL orders</button>
+        <button onclick="fetchOrderData('masterguide', 'getALOrders', 'Masterguide Total Order Qty (AL)', 'al')">AL orders</button>
+        <button class="back" onclick="goBackToPublisherMenu('masterguideMenu')">← Back</button>
+    </div>
+
+    <!-- Live Shop Update Timestamps Card -->
+    <div id="timestampsCard" class="timestamps-card hidden">
+        <h3>
+            <span>🕒 Shop Update Status</span>
+            <button class="clear-btn" onclick="clearTimestamps()">Clear Timestamps List</button>
+        </h3>
+        <ul id="timestampsList" class="shop-time-list">
+            <li class="shop-time-item">Loading timestamps...</li>
+        </ul>
+    </div>
+
+    <!-- Orders Table View -->
+    <div id="ordersView" class="hidden">
+        
+        <!-- Header container visible strictly during print -->
+        <div class="print-header">
+            <div class="print-header-content">
+                <div class="print-logo-title">
+                    <img src="logo.png" alt="Logo" class="print-logo" onerror="this.style.display='none'">
+                    <h2 class="print-shop-name">Samanala Bookshop</h2>
+                </div>
+                <div class="print-date">
+                    Order Date: <span id="printDateSpan"></span>
+                </div>
+            </div>
+        </div>
+
+        <h2 id="tableTitle">Total Order Qty</h2>
         <div id="tableContainer">
             <div class="loading-msg">Loading table data...</div>
         </div>
 
         <div class="button-group">
-            <button class="action-btn" onclick="goBackToWijethungaMenu()">
-                ← Back
-            </button>
-            <button class="action-btn print-btn" onclick="printPDF()">
-                🖨️ Print / Save PDF
-            </button>
+            <button class="action-btn" onclick="goBackFromOrdersView()">← Back</button>
+            <button class="action-btn print-btn" onclick="printPDF()">🖨️ Print / Save PDF</button>
+            <button class="action-btn danger-btn" onclick="clearCurrentCategoryAvailQty()">🗑️ Clear Available Quantities</button>
         </div>
     </div>
 
@@ -265,8 +175,20 @@
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwLaYh9m5Lc2MwFThleWbhwwMVUtL9R2DGr06U7bNPJumV2pBFLAI0aW-Hc__LsqZ5X/exec"; 
+    let activeSubMenuId = "wijethungaMenu";
 
-    // Navigation Functions
+    let currentPublisher = "";
+    let currentAction = "";
+    let currentTitle = "";
+    let currentCategory = "";
+
+    const shopLabels = {
+        'm_shop': 'M Shop',
+        'v_shop': 'V Shop',
+        'a_shop': 'A Shop',
+        'h_shop': 'H Shop'
+    };
+
     function showOrders() {
         document.getElementById("mainMenu").classList.add("hidden");
         document.getElementById("publisherMenu").classList.remove("hidden");
@@ -275,37 +197,102 @@
     function goBackToMainMenu() {
         document.getElementById("publisherMenu").classList.add("hidden");
         document.getElementById("mainMenu").classList.remove("hidden");
+        document.getElementById("timestampsCard").classList.add("hidden");
     }
 
     function wijethungaOrders() {
+        activeSubMenuId = "wijethungaMenu";
         document.getElementById("publisherMenu").classList.add("hidden");
         document.getElementById("wijethungaMenu").classList.remove("hidden");
+        loadTimestamps();
     }
 
-    function goBackToPublisherMenu() {
-        document.getElementById("wijethungaMenu").classList.add("hidden");
+    function masterguideOrders() {
+        activeSubMenuId = "masterguideMenu";
+        document.getElementById("publisherMenu").classList.add("hidden");
+        document.getElementById("masterguideMenu").classList.remove("hidden");
+        loadTimestamps();
+    }
+
+    function goBackToPublisherMenu(currentMenuId) {
+        document.getElementById(currentMenuId).classList.add("hidden");
         document.getElementById("publisherMenu").classList.remove("hidden");
+        document.getElementById("timestampsCard").classList.add("hidden");
     }
 
-    function goBackToWijethungaMenu() {
-        document.getElementById("wijethungaOrdersView").classList.add("hidden");
-        document.getElementById("wijethungaMenu").classList.remove("hidden");
+    function goBackFromOrdersView() {
+        document.getElementById("ordersView").classList.add("hidden");
+        document.getElementById(activeSubMenuId).classList.remove("hidden");
+        document.getElementById("timestampsCard").classList.remove("hidden");
+    }
+
+    function loadTimestamps() {
+        const card = document.getElementById("timestampsCard");
+        const list = document.getElementById("timestampsList");
+        card.classList.remove("hidden");
+
+        fetch(`${WEB_APP_URL}?action=getUpdateTimestamps`)
+            .then(res => res.json())
+            .then(props => {
+                list.innerHTML = "";
+                let count = 0;
+                for (let key in props) {
+                    let parts = key.split('_'); // Format: shopKey_publisher_formType
+                    let shopName = shopLabels[parts[0] + '_' + parts[1]] || key;
+                    let meta = parts.slice(2).join(' ').toUpperCase();
+
+                    let li = document.createElement("li");
+                    li.className = "shop-time-item";
+                    li.innerHTML = `<strong>${shopName} (${meta}):</strong> ${props[key]}`;
+                    list.appendChild(li);
+                    count++;
+                }
+
+                if (count === 0) {
+                    list.innerHTML = "<li class='shop-time-item'>No updates recorded yet.</li>";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                list.innerHTML = "<li class='shop-time-item'>Failed to load timestamps.</li>";
+            });
+    }
+
+    function clearTimestamps() {
+        if (!confirm("Are you sure you want to clear all timestamp logs?")) return;
+
+        fetch(`${WEB_APP_URL}?action=clearUpdateTimestamps`)
+            .then(res => res.json())
+            .then(() => {
+                loadTimestamps();
+            })
+            .catch(err => console.error(err));
     }
 
     function printPDF() {
+        // Automatically inject current date/time when printing
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById("printDateSpan").textContent = formattedDate;
+
         window.print();
     }
 
-    // 1. Fetch Grade 6-11 Data
-    function wijethungaGrade6To11() {
-        document.getElementById("wijethungaMenu").classList.add("hidden");
-        document.getElementById("wijethungaOrdersView").classList.remove("hidden");
-        document.getElementById("tableTitle").textContent = "Total Order Qty (Grade 6 - 11)";
+    function fetchOrderData(publisher, action, titleText, category) {
+        currentPublisher = publisher;
+        currentAction = action;
+        currentTitle = titleText;
+        currentCategory = category;
+
+        document.getElementById(activeSubMenuId).classList.add("hidden");
+        document.getElementById("timestampsCard").classList.add("hidden");
+        document.getElementById("ordersView").classList.remove("hidden");
+        document.getElementById("tableTitle").textContent = titleText;
 
         var container = document.getElementById("tableContainer");
         container.innerHTML = "<div class='loading-msg'>Loading table data...</div>";
 
-        fetch(WEB_APP_URL + "?action=getOrders")
+        fetch(`${WEB_APP_URL}?publisher=${publisher}&action=${action}`)
             .then(response => response.json())
             .then(data => {
                 renderSummaryTable(data);
@@ -316,27 +303,27 @@
             });
     }
 
-    // 2. Fetch O/L Orders Data
-    function wijethungaOL() {
-        document.getElementById("wijethungaMenu").classList.add("hidden");
-        document.getElementById("wijethungaOrdersView").classList.remove("hidden");
-        document.getElementById("tableTitle").textContent = "Total Order Qty (O/L Subjects)";
+    function clearCurrentCategoryAvailQty() {
+        if (!confirm(`Are you sure you want to clear ALL AVAILABLE QUANTITIES for all shops in ${currentTitle}? This action cannot be undone.`)) {
+            return;
+        }
 
-        var container = document.getElementById("tableContainer");
-        container.innerHTML = "<div class='loading-msg'>Loading table data...</div>";
+        var container = document.innerHTML = "<div class='loading-msg'>Clearing available quantities...</div>";
 
-        fetch(WEB_APP_URL + "?action=getOLOrders")
-            .then(response => response.json())
-            .then(data => {
-                renderSummaryTable(data);
+        fetch(`${WEB_APP_URL}?publisher=${currentPublisher}&action=clearAvailableQuantities&category=${currentCategory}`)
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message || "Available quantities cleared!");
+                // Refresh table display
+                fetchOrderData(currentPublisher, currentAction, currentTitle, currentCategory);
             })
             .catch(err => {
                 console.error(err);
-                container.innerHTML = "<div class='empty-msg'>Error loading data: " + err.message + "</div>";
+                alert("Error clearing quantities: " + err.message);
+                fetchOrderData(currentPublisher, currentAction, currentTitle, currentCategory);
             });
     }
 
-    // Universal Dynamic Table Renderer
     function renderSummaryTable(data) {
         var container = document.getElementById("tableContainer");
 
@@ -345,17 +332,10 @@
             return;
         }
 
-        var html = "<div class='table-responsive-wrapper'>";
-        html += "<table class='summary-table'>";
-
-        html += "<thead>";
-        
-        // Header Row 1
-        html += "<tr>";
+        var html = "<div class='table-responsive-wrapper'><table class='summary-table'><thead><tr>";
         var colsInRow0 = data[0].length;
         for (var c = 0; c < colsInRow0; c++) {
             var val = data[0][c] !== "" ? data[0][c] : "";
-            // Handle merged title cells across all columns on row 1 if applicable
             if (c === 0 && colsInRow0 > 1 && data[0].slice(1).every(item => item === "")) {
                 html += "<th colspan='" + colsInRow0 + "'>" + val + "</th>";
                 break;
@@ -365,7 +345,6 @@
         }
         html += "</tr>";
 
-        // Header Row 2 (Column Labels / Subtitles)
         if (data.length > 1 && data[1].some(cell => cell !== "")) {
             html += "<tr>";
             for (var c = 0; c < data[1].length; c++) {
@@ -374,10 +353,7 @@
             html += "</tr>";
         }
         
-        html += "</thead>";
-
-        // Render Data Rows (Starting from Index 2)
-        html += "<tbody>";
+        html += "</thead><tbody>";
         for (var r = 2; r < data.length; r++) {
             var isRowEmpty = data[r].every(cell => cell === "" || cell === null);
             if (!isRowEmpty) {
@@ -388,16 +364,9 @@
                 html += "</tr>";
             }
         }
-        html += "</tbody>";
-
-        html += "</table>";
-        html += "</div>";
+        html += "</tbody></table></div>";
 
         container.innerHTML = html;
-    }
-
-    function masterguideOrders() {
-        alert("Masterguide Pending Orders");
     }
 
     function previousOrders() {
