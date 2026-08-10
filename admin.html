@@ -27,6 +27,13 @@
         .danger-btn { background-color: #e74c3c; }
         .danger-btn:hover { background-color: #c0392b; }
 
+        /* Skip Shop Controls */
+        .skip-shops-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .skip-shops-card h3 { margin: 0 0 12px 0; font-size: 15px; color: #333; }
+        .skip-btn-group { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .skip-btn { background-color: #e67e22; color: white; border: none; padding: 8px 16px; font-size: 13px; border-radius: 5px; cursor: pointer; transition: background 0.2s ease; }
+        .skip-btn:hover { background-color: #d35400; }
+
         /* Timestamps Container Styling */
         .timestamps-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px 20px; margin: 20px 0; text-align: left; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
         .timestamps-card h3 { margin-top: 0; color: #2c3e50; font-size: 16px; border-bottom: 2px solid #2d89ef; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
@@ -53,7 +60,7 @@
             }
 
             body { background: #fff !important; padding: 0 !important; }
-            h1, h2:not(.print-shop-name), .admin-name, #mainMenu, #publisherMenu, #wijethungaMenu, #masterguideMenu, .button-group, .timestamps-card { display: none !important; }
+            h1, h2:not(.print-shop-name), .admin-name, #mainMenu, #publisherMenu, #wijethungaMenu, #masterguideMenu, .button-group, .timestamps-card, .skip-shops-card { display: none !important; }
             .dashboard { box-shadow: none !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
             #ordersView { display: block !important; margin: 0 !important; width: 100% !important; }
             
@@ -160,6 +167,18 @@
         </div>
 
         <h2 id="tableTitle">Total Order Qty</h2>
+
+        <!-- Skip Shop Control Buttons -->
+        <div class="skip-shops-card">
+            <h3>🚫 Skip Closed Shop (Set Order Qty to 0)</h3>
+            <div class="skip-btn-group">
+                <button class="skip-btn" onclick="skipShop('m_shop', 'M Shop')">Skip M Shop</button>
+                <button class="skip-btn" onclick="skipShop('v_shop', 'V Shop')">Skip V Shop</button>
+                <button class="skip-btn" onclick="skipShop('a_shop', 'A Shop')">Skip A Shop</button>
+                <button class="skip-btn" onclick="skipShop('h_shop', 'H Shop')">Skip H Shop</button>
+            </div>
+        </div>
+
         <div id="tableContainer">
             <div class="loading-msg">Loading table data...</div>
         </div>
@@ -303,12 +322,35 @@
             });
     }
 
+    function skipShop(shopKey, shopDisplayName) {
+        if (!confirm(`Are you sure you want to skip ${shopDisplayName}? This will set all Available Quantities equal to Stock Quantities for this shop so Order Quantities become 0.`)) {
+            return;
+        }
+
+        var container = document.getElementById("tableContainer");
+        container.innerHTML = `<div class='loading-msg'>Skipping ${shopDisplayName} and updating quantities...</div>`;
+
+        fetch(`${WEB_APP_URL}?publisher=${currentPublisher}&action=copyStockToAvailable&shop=${shopKey}&category=${currentCategory}`)
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message || `${shopDisplayName} skipped successfully!`);
+                // Refresh table display to reflect change
+                fetchOrderData(currentPublisher, currentAction, currentTitle, currentCategory);
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error skipping shop: " + err.message);
+                fetchOrderData(currentPublisher, currentAction, currentTitle, currentCategory);
+            });
+    }
+
     function clearCurrentCategoryAvailQty() {
         if (!confirm(`Are you sure you want to clear ALL AVAILABLE QUANTITIES for all shops in ${currentTitle}? This action cannot be undone.`)) {
             return;
         }
 
-        var container = document.innerHTML = "<div class='loading-msg'>Clearing available quantities...</div>";
+        var container = document.getElementById("tableContainer");
+        container.innerHTML = "<div class='loading-msg'>Clearing available quantities...</div>";
 
         fetch(`${WEB_APP_URL}?publisher=${currentPublisher}&action=clearAvailableQuantities&category=${currentCategory}`)
             .then(res => res.json())
